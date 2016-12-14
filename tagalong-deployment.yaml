@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: tagalong-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: tagalong
+    spec:
+      hostname: tagalong
+      containers:
+      - name: mongodb
+        image: gcr.io/tagalong-152310/mongo:v1
+      - name: tagalong
+        image: gcr.io/tagalong-152310/tagalong:v6
+        ports:
+        - containerPort: 8080
+      - name: rabbitmq
+        image: gcr.io/tagalong-152310/rabbitmq:v1
+      - name: receive
+        image: gcr.io/tagalong-152310/receive:v4
+      - name: alertreceiver
+        image: gcr.io/tagalong-152310/alertreceiver:v1
+

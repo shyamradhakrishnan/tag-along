@@ -1,0 +1,14 @@
+{
+  "name": "docker_web_app",
+  "version": "1.0.0",
+  "description": "Node.js on Docker",
+  "author": "Mukesh kumawat <mukeshkrd@gmail.com>",
+  "main": "receive.js",
+  "scripts": {
+    "start": "node receive.js"
+  },
+  "dependencies": {
+    "mongodb": "latest",
+    "amqplib":"latest"
+  }
+}
