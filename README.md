@@ -8,6 +8,6 @@ Tag Along is an application for a group of road travelers to ensure their connec
 ![Architecture Logo](tagalong/images/arch.png)
 
 #Test
-To run the test cases, run following command<br><br>
+To run the test case, run following command<br><br>
 node test.js<br><br>
 Test Case Description: In the test case, three people start the trip together. Initially, group members send their starting coordinates. After two minutes, group members send their updated coordinates. Again after two seconds, an update from one of the group members is missing, which is generated as an alert in the Notifications.
