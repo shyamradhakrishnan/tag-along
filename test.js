@@ -1,5 +1,5 @@
 var request = require('request');
-var hostid = '104.198.39.182:8080';
+var hostid = '104.198.247.115:8080';
 var sleep = require('sleep');
 
 function httprequest1(tripid){
