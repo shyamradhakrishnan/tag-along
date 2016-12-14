@@ -10,4 +10,4 @@ accidents or mishaps which has happened to anyone in the group in quick time.
 
 ##Architecture
 
-![Architecture Logo](images/arch.png)
+![Architecture Logo](tagalong/images/arch.png)
