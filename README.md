@@ -1,11 +1,6 @@
 
 ##Introduction
-The group travel companion application so that everyone in the group is in vicinity so that no on gets lost. 
-The application can be used toquickly identify the traveller who is not tagging along with the group 
-and notifications will be sent to the entire group with the list of travellers who are not consistently
-travelling within an expected range.
-The application can be used by road trippers to move together as a group and identify any 
-accidents or mishaps which has happened to anyone in the group in quick time.
+Tag Along is an application for a group of road travelers to ensure their connectivity and safety by keeping them always together on their path to the chosen destination. For example, a group of bikers traveling to destination X register on the application before starting their trip. After starting the trip, the application will periodically monitor the location of the group members to ensure that all are headed together to X.
 
 
 ##Architecture
