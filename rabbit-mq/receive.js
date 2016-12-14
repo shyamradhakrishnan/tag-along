@@ -1,8 +1,8 @@
-var amqp = require('amqplib/callback_api');
+ var amqp = require('amqplib/callback_api');
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
 var url = 'mongodb://localhost:27017/tagalongdb';
-
+var ObjectId = require('mongodb').ObjectId;
 
 amqp.connect('amqp://tagalong', function (err, conn) {
     conn.createChannel(function (err, ch) {
@@ -26,8 +26,9 @@ amqp.connect('amqp://tagalong', function (err, conn) {
                     console.log('Connection established to', url);
                     var collection = db.collection('userlocation');
                     var alertcol = db.collection('alerts');
-                    collection.find({loc: {$near: [longitude, latitude ], $maxDistance: 1000.0784806153}, time: {$gte: recvdtime-120000, $lt: recvdtime}, tripid: rectripid}, {userid: 1}).toArray(function (err, result) {
-                        var array = [];                        
+                    //var o_id = new ObjectId(rectripid);
+                    collection.find({loc: {$near: [longitude, latitude ], $maxDistance: 1000.0784806153}, time: {$gte: recvdtime-120000}, tripid: rectripid}, {userid: 1}).toArray(function (err, result) {
+                        var array = [];
                         if (err) {
                             console.log(err);
                         } else{
@@ -54,8 +55,8 @@ amqp.connect('amqp://tagalong', function (err, conn) {
                                     }
                                 });
                                 console.log(array);
-                                
-                                
+
+
                                 if(array.length >0){
                                 conn.createChannel(function (err, sendch) {
                                     var sendq = 'alertq';
@@ -65,11 +66,11 @@ amqp.connect('amqp://tagalong', function (err, conn) {
                                     console.log(" [x] Sent %s", msg);
                                 });
                             }
-                                
-                                
-                                
-                                
-                                
+
+
+
+
+
                                 /*if(alert == 1){
                                  var alertcol = db.collection('alerts');
                                  var alertentry = {tripid:rectripid, time:recvdtime, members: array};
@@ -80,7 +81,7 @@ amqp.connect('amqp://tagalong', function (err, conn) {
                                  //console.log('Inserted %d documents into "alerts" collection. The documents inserted with "_id" are:', result.length, result);
                                  }
                                  //Close connection
-                                 }); 		
+                                 });
                                  }*/
 
 // curl -H "Content-Type: application/json" -X POST -d '{"phonenumber":"9967809199","latitude":"111.5","longitude":"111.1", "tripid":"21"}' http://localhost:8080/sendCoordinates

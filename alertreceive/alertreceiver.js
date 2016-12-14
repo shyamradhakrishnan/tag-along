@@ -19,7 +19,7 @@ conn.createChannel(function (err, ch) {
                 console.log('Connection established to', url);
                 var alertcol = db.collection('alerts');
                 var splitmsg = recmsg.split("#");
-                var tripid = parseFloat(splitmsg[0]);
+                var tripid = splitmsg[0];
                 var time = parseFloat(splitmsg[1]);
                 var members = splitmsg[2];
                 var alertentry = {tripid:tripid, time:time, members: members};

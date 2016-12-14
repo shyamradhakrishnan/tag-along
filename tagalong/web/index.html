@@ -6,30 +6,50 @@
 
     <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="extra.css">
 
     <script src="jquery/dist/jquery.min.js"></script>
     <script src="angular/angular.min.js"></script>
     <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="tagalong.js"></script>
+    <style>
+        body {
+        background-image: url("map.png");
+        }
+</style>
 </head>
 <html>
 <body>
 
-<div class="container">
-    <div class="page-header">
-        <h2>Tag Along</h2>
-    </div>
-    <div ng-app="myApp" ng-controller="tagalongCtrl">
 
-        <!-- Modal Add Product -->
+<section >
+<div class="container">
+    <header class="site-header">
+        <a><h1>Tag Along</h1></a>
+
+        <ul class="user-navigation">
+            <li><a href="/register">Sign Up</a></li>
+            <li><a href="/login">Login</a></li>
+        </ul>
+    </header>
+    <div ng-app="myApp" ng-controller="tagalongCtrl">
+        <div class="alert alert-success" ng-show="addUserNotification">
+            User {{addedusername}} added successfully. &nbsp;&nbsp;
+        </div>
+        <div class="alert alert-success" ng-show="startTripNotification">
+            Trip started successfully. &nbsp;&nbsp;
+        </div>
+
+
+        <!-- Modal Register -->
         <div class="modal fade" id="register" role="dialog">
             <div class="modal-dialog">
                 <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header" style="padding:35px 50px;">
+                <div class="modal-content" style="color:#024457">
+                    <div class="modal-header" style="padding:35px 50px">
                         <button type="button" class="close"
                                 data-dismiss="modal">&times;</button>
-                        <h4 style="color:red;">{{buttonAction}}
+                        <h4 style="color:red;">
                             Register</h4>
                     </div>
                     <div class="modal-body" style="padding:40px 50px;">
@@ -73,43 +93,104 @@
                 </div>
             </div>
         </div>
+
         <button type="button" class="btn btn-default" id="btnAddTrip"
                 ng-click="addUser()">
             <span class="glyphicon glyphicon-plus"></span> Register
         </button>
 
+        <!-- Modal Register -->
+        <div class="modal fade" id="starttrip" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header" style="padding:35px 50px;">
+                        <button type="button" class="close"
+                                data-dismiss="modal">&times;</button>
+                        <h4 style="color:red;">
+                            Start Trip</h4>
+                    </div>
+                    <div class="modal-body" style="padding:40px 50px;">
+                        <form class="form-horizontal" role="form">
+                            <div class="form-group">
+                                <label for="name" class="control-label col-sm-4">Trip Name:</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control"
+                                           id="tripname" ng-model="tripname"
+                                           placeholder="Enter trip Name"
+                                           required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="deptCode" class="control-label col-sm-4">Add Members:</label>
+
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control"
+                                           id="members" ng-model="members"
+                                           placeholder="Enter memebrs id"
+                                           required>
+
+
+                                </div>
+                            </div>
+                            <button type="submit"
+                                    class="btn btn-default btn-success btn-block"
+                                    ng-click="saveTrip()">
+                                Start
+                            </button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit"
+                                class="btn btn-default btn-default pull-left"
+                                data-dismiss="modal"><span
+                                class="glyphicon glyphicon-remove"></span>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-default" id="btStartTrip"
+                ng-click="startTrip()">
+            <span class="glyphicon glyphicon-plus"></span> Start Trip
+        </button>
+
         <p>
-
-        <div class="alert alert-success" ng-show="delete">
-            Deleted Product {{productActioned}}. &nbsp;&nbsp;
-            DELETE {{current_url}}/cache/products/{{productActioned}}
-        </div>
-        <div class="alert alert-success" ng-show="save">
-            Added/Edited Product {{productActioned}}. &nbsp;&nbsp;
-            PUT {{current_url}}/cache/products/{{productActioned}}
-        </div>
-        <div class="alert alert-success" ng-show="receive">
-            Received Product {{productActioned}}. &nbsp;&nbsp;
-            POST {{current_url}}/cache/products/{{productActioned}}/increment(qtyOnHand,{{amount}})
-        </div>
-        <div class="alert alert-success" ng-show="adjust">
-            Adjusted prices by factory of {{amount}}. &nbsp;&nbsp;
-            POST {{current_url}}/cache/products/increment({{amount}})
-        </div>
-
-        <table ng-table="notifications" >
+        <h2>Notifications</h2>
+        <table ng-table="notifications" class="responstable">
             <tr>
                 <th>Trip Id</th>
                 <th>Date</th>
-                <th>Phone Numbers</th>
+                <th>Missing Members</th>
             </tr>
-            <tr ng-repeat="x in names">
+            <tr ng-repeat="x in alerts">
+
                 <td ng-if="$odd" style="background-color:#f1f1f1" align="right">
-                    {{ x.deptCode }}
+                    {{ x.tripid }}
                 </td>
+                <td ng-if="$even" align="right">
+                    {{ x.tripid }}
+                </td>
+                <td ng-if="$odd" style="background-color:#f1f1f1" align="right">
+                    {{ x.time }}
+                </td>
+                <td ng-if="$even" align="right">
+                    {{ x.time }}
+                </td>
+                <td ng-if="$odd" style="background-color:#f1f1f1" align="right">
+                    {{ x.members }}
+                </td>
+                <td ng-if="$even" align="right">
+                    {{ x.members }}
+                </td>
+
             </tr>
         </table>
     </div>
 </div>
+    </section>
+<div id="fixedfooter">Bottom div content</div>
 </body>
 </html>

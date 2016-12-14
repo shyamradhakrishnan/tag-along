@@ -8,11 +8,12 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "amqplib": "latest",
     "angular": "^1.6.0",
     "body-parser": "latest",
     "bootstrap": "^3.3.7",
     "express": "^4.13.3",
     "jquery": "^3.1.1",
-    "mongodb": "latest"
+    "mongodb": "^2.2.16"
   }
 }

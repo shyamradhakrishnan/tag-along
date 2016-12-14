@@ -3,23 +3,23 @@
 const express = require('express');
 
 var bodyParser = require('body-parser');
-
-
+var amqp = require('amqplib/callback_api');
+var mongodb = require('mongodb');
 // Constants
-const PORT = 8085;
+const PORT = 8080;
 
 // App
 const app = express();
 
 //mongodb//
 //lets require/import the mongodb native drivers.
-var mongodb = require('mongodb');
+
 
 //We need to work with "MongoClient" interface in order to connect to a mongodb server.
 var MongoClient = mongodb.MongoClient;
 
 // Connection URL. This is where your mongodb server is running.
-var url = 'mongodb://localhost:27017/mydb';
+var url = 'mongodb://localhost:27017/tagalongdb';
 
 
 app.use(express.static('node_modules'))
@@ -29,13 +29,16 @@ MongoClient.connect(url, function (err, db) {
   if (err) {
     console.log('Unable to connect to the mongoDB server. Error:', err);
   } else {
-    //HURRAY!! We are connected. :)
-    console.log('Connection established to', url);
+
+     var collection = db.collection('userlocation');
+     collection.createIndex({"loc":"2d"});
+     console.log('Connection established to', url);
 
     // do some work here with the database.
 
     //Close connection
     db.close();
+     console.log('Connection estafgsdthrdtthyblished to');
   }
 });
 
@@ -68,6 +71,46 @@ app.get('/userlist', function(req, res) {
     });
 });
 
+app.get('/alert', function (req, res) {
+    var tripid = req.body.tripid;
+
+    MongoClient.connect(url, function (err, db) {
+ 	 if (err) {
+ 	   console.log('Unable to connect to the mongoDB server. Error:', err);
+ 	 }
+ 	 var collection = db.collection('alerts');
+     collection.find({'tripid':tripid}).toArray(function(err, docs){
+         console.log("retrieved records:");
+         res.send(docs);
+     });
+    });
+});
+app.get('/alerts', function (req, res) {
+
+    MongoClient.connect(url, function (err, db) {
+ 	 if (err) {
+ 	   console.log('Unable to connect to the mongoDB server. Error:', err);
+ 	 }
+ 	 var collection = db.collection('alerts');
+     collection.find().toArray(function(err, docs){
+     var array = [];
+                                             docs.forEach(function (item) {
+                                                var tt = date(item.time);
+                                             var ss = {'_id':item._id,'time': tt,'members':item.members,'tripid':item.tripid}
+
+                                             array.push(ss)
+
+                                             });
+
+         res.send(array);
+     });
+    });
+});
+
+function date(mili){
+return new Date(mili).toISOString().replace(/T/, ' ').replace(/\..+/, '');
+};
+
 
 
 app.post('/register', (req, res) => {
@@ -80,7 +123,6 @@ app.post('/register', (req, res) => {
  	 } else {
 	  var collection = db.collection('users');
 	   var result=  collection.find({'number':phonenumber}).toArray();
-	   console.log('ddddddddddddddd %d', result.count);
               if (result.length >= 1)
               {
                   console.log('user  %s already registered ', username);
@@ -119,14 +161,17 @@ app.post('/register', (req, res) => {
 
 app.post('/sendCoordinates', (req, res) => {
 var latitude = parseFloat(req.body.latitude);
-var id = req.body.phonenumber;
+var id = parseFloat(req.body.phonenumber);
 var longitude = parseFloat(req.body.longitude);
 var tripID = req.body.tripid;
 var time = Date.now();
+    console.log("starting 1 ");
     MongoClient.connect(url, function (err, db) {
     if (err) {
+    console.log("starting 2 ");
     console.log('Unable to connect to the mongoDB server. Error:', err);
     } else {
+    console.log("starting 3 ");
     var collection = db.collection('userlocation');
             var user = { userid: id, tripid: tripID, time:time, loc:[latitude, longitude] };
             collection.insert(user, function (err, result) {
@@ -140,8 +185,9 @@ var time = Date.now();
             });
     }
     });
-    amqp.connect('amqp://localhost', function(err, conn) {
+    amqp.connect('amqp://tagalong', function(err, conn) {
     conn.createChannel(function(err, ch) {
+    console.log("starting 4 ");
     var q = 'positionq';
             var msg = id + '#' + tripID + '#' + time + '#' + latitude + '#' + longitude;
             ch.assertQueue(q, {durable: false});
@@ -151,6 +197,7 @@ var time = Date.now();
     });
          //   setTimeout(function() { conn.close() }, 500);
             });
+            console.log("starting 5 ");
     res.send("Recieved coordinates");
     });
 
@@ -175,21 +222,11 @@ app.post('/starttrip', (req, res) => {
                                }
                            //Close connection
                            db.close();
+                           res.send(result.ops[0]._id);
 
                           });
                           }
                           });
-
-             MongoClient.connect(url, function (err, db) {
-           	 if (err) {
-           	   console.log('Unable to connect to the mongoDB server. Error:', err);
-           	 }
-           	 var collection = db.collection('trips');
-               collection.find({'tripname':tripname}).toArray(function(err, docs){
-                   console.log("retrieved records:");
-                   res.send(docs);
-               });
-              })
 });
 
 app.listen(PORT);
